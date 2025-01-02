@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Raw Milk Data</title>
+    <link rel="stylesheet" href="DemoStyle.css">
+</head>
+<body>
+    <h1>Raw Milk Data</h1>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Field</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Person in Charge</td>
+                <td id="displayPersonInCharge"></td>
+            </tr>
+            <tr>
+                <td>Milk Tank Number</td>
+                <td id="displayMilkTankNum"></td>
+            </tr>
+            <tr>
+                <td>Quantity</td>
+                <td id="displayQuantity"></td>
+            </tr>
+            <tr>
+                <td>Quantity Unit</td>
+                <td id="displayQuantityUnit"></td>
+            </tr>
+            <tr>
+                <td>Temperature</td>
+                <td id="displayTemperature"></td>
+            </tr>
+            <tr>
+                <td>Temperature Unit</td>
+                <td id="displayTemperatureUnit"></td>
+            </tr>
+            <tr>
+                <td>pH</td>
+                <td id="displayQualityPh"></td>
+            </tr>
+            <tr>
+                <td>Fat</td>
+                <td id="displayQualityFat"></td>
+            </tr>
+            <tr>
+                <td>Protein</td>
+                <td id="displayQualityProtein"></td>
+            </tr>
+            <tr>
+                <td>Bacterial Testing</td>
+                <td id="displayBacterialTesting"></td>
+            </tr>
+            <tr>
+                <td>Contaminants</td>
+                <td id="displayContaminants"></td>
+            </tr>
+            <tr>
+                <td>Abnormal Characteristics</td>
+                <td id="displayAbnormalCharacteristics"></td>
+            </tr>
+            <tr>
+                <td>Address</td>
+                <td id="displayAddress"></td>
+            </tr>
+            <tr>
+                <td>Location</td>
+                <td id="displayLocation"></td>
+            </tr>
+            <tr>
+                <td>Data has been stored successfully in IPFS. Access it here: </td>
+                <td id="IPFSurl"></td>
+            </tr>
+        </tbody>
+    </table>
+      
+
+    <script>
+
+        async function fetchMilkData() {
+            try {
+                const response = await fetch('/raw-milk-data/1'); // Replace '1' with the desired id
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                
+                // Debugging: Log the data received
+                console.log('Fetched Data:', data);
+
+                // Update the DOM with the fetched data
+                document.getElementById('displayPersonInCharge').textContent = data.person_in_charge || 'N/A';
+                document.getElementById('displayMilkTankNum').textContent = data.milk_tank_number || 'N/A';
+                document.getElementById('displayQuantity').textContent = data.quantity || 'N/A';
+                document.getElementById('displayQuantityUnit').textContent = data.quantity_unit || 'N/A';
+                document.getElementById('displayTemperature').textContent = data.temperature || 'N/A';
+                document.getElementById('displayTemperatureUnit').textContent = data.temperature_unit || 'N/A';
+                document.getElementById('displayQualityPh').textContent = data.quality_ph || 'N/A';
+                document.getElementById('displayQualityFat').textContent = data.quality_fat || 'N/A';
+                document.getElementById('displayQualityProtein').textContent = data.quality_protein || 'N/A';
+                document.getElementById('displayBacterialTesting').textContent = data.bacterial_testing ? "Negative" : "Positive";
+                document.getElementById('displayContaminants').textContent = data.contaminants ? "None" : "Present";
+                document.getElementById('displayAbnormalCharacteristics').textContent = (data.sour_taste ? "Sour Taste, " : "") +
+                    (data.bitter_taste ? "Bitter Taste, " : "") +
+                    (data.cloudy_appearance ? "Cloudy Appearance, " : "") +
+                    (data.lumpy_appearance ? "Lumpy Appearance, " : "") +
+                    (data.water_and_fat ? "Water and Fat, " : "") +
+                    (data.smell_bad ? "Bad Smell, " : "") +
+                    (data.smell_not_fresh ? "Not Fresh, " : "") +
+                    (data.abnormal_color ? "Abnormal Color" : "") || 'None';
+                document.getElementById('displayAddress').textContent = data.address || 'N/A';
+                document.getElementById('displayLocation').innerHTML = `<a href="${data.location_url}" target="_blank">Google Maps Link</a>` || 'N/A';
+                document.getElementById('IPFSurl').innerHTML = `<a href="https://ipfs.io/ipfs/${data.ipfs_cid}" target="_blank">View on IPFS</a>`;
+            } catch (error) {
+                console.error('Error fetching data: ', error);
+                alert('Failed to fetch data from the server.');
+            }
+        }
+
+        // Fetch data on page load
+        window.onload = function() {
+            fetchMilkData();
+        };
+
+    </script>
+</body>
+</html>

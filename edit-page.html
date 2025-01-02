@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produce Raw Milk</title>
+    <link rel="stylesheet" href="ProduceRawMilk.css">
+</head>
+<body>
+    <h1>Produce Raw Milk</h1>
+    <form id="milkForm" action="/submit" method="POST">
+        <div class="container">
+            <div class="container2">
+                <div>
+                    <label class="boldLabel" for="PersonInCharge">Person in charge:</label>
+                    <input type="text" id="PersonInCharge" name="PersonInCharge" required>
+                    <label class="boldLabel" for="MilkTankNum">Milk Tank Number:</label>
+                    <input type="number" name="MilkTankNum" id="MilkTankNum" placeholder="Enter your milk tank number" required>
+                </div>
+
+                <div class="container3">
+                    <div>
+                        <label class="boldLabel" for="Quantity">Quantity:</label>
+                        <input type="number" id="Quantity" name="Quantity" step="0.01" placeholder="0.00" required>
+                        <select name="QuantityUnit" id="QuantityUnit" required>
+                            <option value="Liter">Liter</option>
+                            <option value="Milliliter">Milliliter</option>
+                            <option value="Ton">Ton</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-left: 400px;">
+                        <label class="boldLabel" for="Temperature">Temperature:</label>
+                        <input type="number" id="Temperature" name="Temperature" step="0.01" placeholder="0.00" required>
+                        <select name="TemperatureUnit" id="TemperatureUnit" required>
+                            <option value="Celcius">°C</option>
+                            <option value="Fahrenheit">°F</option>
+                        </select>
+                    </div>
+                </div>
+
+                <script>
+                    function toggleSubCheckboxes(mainCheckboxId, subElementId){
+                        var mainCheckbox = document.getElementById(mainCheckboxId);
+                        var subElement = document.getElementById(subElementId);
+                        subElement.style.display = mainCheckbox.checked ? "block" : "none";
+                    }
+                </script>
+
+                <div class="container4">
+                    <div>
+                        <label class="boldLabel" for="Quality of Raw Milk">Quality of Raw Milk:</label>
+
+                        <!--Main CB 1: pH-->
+                        <label for="MainQualityRM3">pH of Raw Milk</label>
+                        <input type="number" id="MainQualityRM3" name="MainQualityRM3" step="0.01" placeholder="0.00"><br>
+
+                        <!--Main CB 2: Fat-->
+                        <label for="MainQualityRM4">Fat</label>
+                        <input type="number" id="MainQualityRM4" name="MainQualityRM4" step="0.01" placeholder="0.00 %"><br>
+
+                        <!--Main CB 3: Protein-->
+                        <label for="MainQualityRM5">Protein</label>
+                        <input type="number" id="MainQualityRM5" name="MainQualityRM5" step="0.01" placeholder="0.00 %"><br>
+
+                        <!--Main CB 4: Bacterial Testing-->
+                        <input type="checkbox" id="MainQualityRM1" onclick="toggleSubCheckboxes('MainQualityRM1', 'subText1')" name="MainQualityRM1" value="Bacterial">
+                        <label for="MainQualityRM1">Bacterial Testing</label><br>
+                        <div id="subText1" class="sub-Text" style="display: none;">
+                            <input id="checkboxTextInput" type="text" name="BactrialTest" placeholder="Please fill in additional information." style="width: 300px;">
+                        </div>
+                        
+                        <!--Main CB 5: Contaminants-->
+                        <input type="checkbox" id="MainQualityRM2" onclick="toggleSubCheckboxes('MainQualityRM2', 'subText2')" name="MainQualityRM2" value="Contaminants">
+                        <label for="MainQualityRM2">Contaminants</label><br>
+                        <div id="subText2" class="sub-Text" style="display: none;">
+                            <input type="text" name="Contaminants" placeholder="Please fill in additional information." style="width: 300px;">                        
+                        </div>
+
+                        <!--Main CB 6: Abnormal Characteristics-->
+                        <input type="checkbox" id="MainQualityRM6" onclick="toggleSubCheckboxes('MainQualityRM6', 'subCheckboxes')" name="MainQualityRM6" value="stWrong">
+                        <label for="MainQualityRM6">Abnormal characteristics</label>
+                        <div id="subCheckboxes" class="sub-checkboxes" style="display: none;">
+                            <input type="checkbox" name="sour_taste" id="sour_taste">
+                            <label for="sour_taste">Sour taste</label><br>
+                            <input type="checkbox" name="bitter_taste" id="bitter_taste">
+                            <label for="bitter_taste">Bitter taste</label><br>
+                            <input type="checkbox" name="cloudy_appearance" id="cloudy_appearance">
+                            <label for="cloudy_appearance">Cloudy appearance</label><br>
+                            <input type="checkbox" name="lumpy_appearance" id="lumpy_appearance">
+                            <label for="lumpy_appearance">Lumpy appearance</label><br>
+                            <input type="checkbox" name="water_and_fat" id="water_and_fat">
+                            <label for="water_and_fat">There is a separation between water and fat.</label><br>
+                            <input type="checkbox" name="smell_bad" id="smell_bad">
+                            <label for="smell_bad">Smell bad</label><br>
+                            <input type="checkbox" name="smell_not_fresh" id="smell_not_fresh">
+                            <label for="smell_not_fresh">Smell not fresh</label><br>
+                            <input type="checkbox" name="abnormal_color" id="abnormal_color">
+                            <label for="abnormal_color">Abnormal color</label>
+                        </div>
+
+                        <div class="container5">
+                            <div>
+                                <label class="boldLabel" for="Address">Address</label><br>
+                                <input type="text" name="Address" id="Address" required><br>
+                                <label class="boldLabel" for="Location">Location</label>
+                                <div id="Gmap" style="height: 400px; width: 400px;"></div>
+                                <input type="url" name="LocationLink" id="LocationLink" placeholder="https://example.com/location" required>
+                            </div>
+
+                            <script>
+            document.getElementById('milkForm').addEventListener('submit', function(e) {
+                                    e.preventDefault(); // Prevent default form submission
+                                    const formData = new FormData(this);
+                                    const data = Object.fromEntries(formData.entries());
+
+                                    // Handling sub-checkboxes to capture their boolean values
+                                    data.sour_taste = document.getElementById("sour_taste").checked;
+                                    data.bitter_taste = document.getElementById("bitter_taste").checked;
+                                    data.cloudy_appearance = document.getElementById("cloudy_appearance").checked;
+                                    data.lumpy_appearance = document.getElementById("lumpy_appearance").checked;
+                                    data.water_and_fat = document.getElementById("water_and_fat").checked;
+                                    data.smell_bad = document.getElementById("smell_bad").checked;
+                                    data.smell_not_fresh = document.getElementById("smell_not_fresh").checked;
+                                    data.abnormal_color = document.getElementById("abnormal_color").checked;
+
+                                  fetch('/submit', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+})
+.then(response => {
+    if (response.ok) {
+        // If the response is successful (status code 200-299), redirect to the display page
+        return window.location.href = '/display-demo';
+    } else {
+        // Handle errors returned by the server
+        return response.json().then(errorData => {
+            console.error('Error from server:', errorData);
+            throw new Error('Error from server: ' + JSON.stringify(errorData));
+        });
+    }
+})
+.then(() => {
+    console.log('Redirecting to /display-demo...');
+})
+.catch((error) => {
+    console.error('Fetch error:', error);
+});
+
+                                });
+                            </script>
+                        
+                        <script>
+                            let Gmap;
+                            let marker;
+
+                            function initMap() {
+                            Gmap = new google.maps.Map(document.getElementById("Gmap"), {
+                                center: { lat: 13.7563, lng: 100.5018 },
+                                zoom: 10,
+                            });
+
+                            Gmap.addListener("click", (event) => {
+                                placeMarker(event.latLng);
+                                updateCoordinates(event.latLng);
+                             });
+                        }
+
+                        function placeMarker(location) {
+                            if (marker) {
+                                marker.setMap(null); // remove old marker
+                             }
+
+                            marker = new google.maps.Marker({ // set new marker
+                                position: location,
+                                map: Gmap,
+                            });
+                        }
+
+                        function updateCoordinates(location) {
+                             const lat = location.lat();
+                            const lng = location.lng();
+                            document.getElementById("coordinates").innerText = `Latitude: ${lat}, Longitude: ${lng}`;
+                            document.getElementById("LocationLink").value = `https://maps.google.com/?q=${lat},${lng}`; // Update input with Google Maps link
+                         }
+
+                        document.getElementById("LocationLink").addEventListener("change", function() {
+                            const url = this.value;
+                            const latLng = getLatLngFromURL(url);
+                            if (latLng) {
+                                placeMarker(latLng);
+                                Gmap.setCenter(latLng);
+                                updateCoordinates(latLng);
+                             }
+                        });
+
+                        function getLatLngFromURL(url) {
+                        const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+                        const match = url.match(regex);
+                        if (match) {
+                            const lat = parseFloat(match[1]);
+                            const lng = parseFloat(match[2]);
+                            return { lat, lng };
+                        }
+                        return null;
+                     }
+                        </script>
+                    </div>
+                        </div>
+                    </div>
+                </div>
+                <input id="btn" type="submit" value="Submit" style="margin-top: 10px;">
+                    <p id="coordinates"></p> <!--Display coordinates-->
+            </div>
+            <div id="notification" style="display: none; background-color: #d4edda; color: #155724; padding: 10px; margin-top: 20px; border: 1px solid #c3e6cb; border-radius: 5px;">
+                <span id="notificationMessage"></span>
+            </div>
+        </div>
+    </form>
+</body>
+<script async defer 
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4l6cSn6f3m4FLynCgDAvGN12rwgl4LvU&callback=initMap">
+    
+</script>
+</html>

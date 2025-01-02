@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milk Batch Data</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        a {
+            color: blue;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .search-container {
+            margin-bottom: 15px;
+        }
+        .search-container input {
+            margin-right: 10px;
+            padding: 5px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Milk Batch Data</h1>
+
+    <div class="search-container">
+        <input type="text" id="search-person" placeholder="Search Person in Charge" oninput="applyFilters()">
+        <input type="text" id="search-tank" placeholder="Search Milk Tank Number" oninput="applyFilters()">
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Person In Charge</th>
+                <th>Milk Tank Number</th>
+                <th>Updated On</th>
+                <th>CID (Link)</th>
+                <th>Action</th>
+                <th>See IPFS Data</th>
+                <th>See Postgres Data</th>
+            </tr>
+        </thead>
+        <tbody id="data-table">
+            <!-- Data will be injected here -->
+        </tbody>
+    </table>
+
+    <script>
+let milkBatchData = []; // Store data globally for filtering
+
+async function fetchMilkData() {
+    try {
+        const response = await fetch('http://localhost:3001/milk-batches');
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        milkBatchData = await response.json(); // Save data for filtering
+        renderTable(milkBatchData); // Render the table with fetched data
+    } catch (err) {
+        console.error('Error fetching data:', err.message);
+    }
+}
+
+function renderTable(data) {
+    const tableBody = document.getElementById('data-table');
+    tableBody.innerHTML = ''; // Clear the table before rendering
+
+    data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${row.id || 'N/A'}</td>
+            <td>${row.person_in_charge || 'N/A'}</td>
+            <td>${row.milk_tank_number || 'N/A'}</td>
+            <td>${row.updated_on ? new Date(row.updated_on).toLocaleString() : 'N/A'}</td>
+            <td><a href="https://ipfs.io/ipfs/${row.ipfs_cid}" target="_blank">${row.ipfs_cid || 'N/A'}</a></td>
+            <td>
+                <button onclick="editData('${row.id}')">✏️ Edit</button>
+            </td>
+            <td>
+                <button onclick="playIPFS('${row.id}')">IPFS</button>
+            </td>
+            <td>
+                <button onclick="playPostgres('${row.id}')">Postgres</button>
+            </td>
+        `;
+        tableBody.appendChild(tr);
+    });
+}
+
+// Search filter
+function applyFilters() {
+    const personFilter = document.getElementById('search-person').value.toLowerCase();
+    const tankFilter = document.getElementById('search-tank').value.toLowerCase();
+
+    const filteredData = milkBatchData.filter(row => {
+        const personMatch = row.person_in_charge?.toLowerCase().includes(personFilter) || false;
+        const tankMatch = row.milk_tank_number?.toLowerCase().includes(tankFilter) || false;
+        return personMatch && tankMatch;
+    });
+
+    renderTable(filteredData);
+}
+
+// Navigate to edit page
+function editData(id) {
+    window.location.href = `http://localhost:3001/edit-page.html?id=${id}`;
+}
+
+// Navigate to display IPFS data
+function playIPFS(id) {
+    window.location.href = `playIPFS.html?id=${id}`;
+}
+
+// Navigate to display Postgres data
+function playPostgres(id) {
+    window.location.href = `playPostgres.html?id=${id}`;
+}
+
+// Fetch data on page load
+window.onload = fetchMilkData;
+    </script>
+</body>
+</html>
